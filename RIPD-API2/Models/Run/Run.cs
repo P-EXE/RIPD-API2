@@ -7,7 +7,7 @@ namespace RIPD_API2.Models;
 public class Run
 {
   public int Id { get; set; }
-  public int DiaryId { get; set; }
+  public Guid DiaryId { get; set; }
   public Diary Diary { get; set; }
   public string MongoDBId { get; set; }
 }

@@ -20,7 +20,7 @@ public class FoodController : ControllerBase
     _dbContext = dbContext;
   }
 
-  [HttpPost, Authorize]
+  [HttpPost]
   public async Task CreateFoodAsync([FromBody] FoodDTO_Create createFood)
   {
     User manufacturer = await _dbContext.Users.Where(u => u.Id.Equals(createFood.Manufacturer)).FirstOrDefaultAsync();

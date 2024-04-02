@@ -4,7 +4,7 @@ namespace RIPD_API2.Models;
 
 public class Food
 {
-  public Guid Id { get; set; }
+  public int Id { get; set; }
   public string? Barcode { get; set; }
   public required string Name { get; set; }
   public required Guid ManufacturerId { get; set; }
@@ -15,8 +15,6 @@ public class Food
   public DateTime? UpdateDateTime { get; set; }
   public string? Description { get; set; }
   public string? Image { get; set; }
-
-  public ICollection<Food_DiaryEntry> DiaryEntries = new HashSet<Food_DiaryEntry>();
 
   /* Macros */
   public float? Energy { get; set; } /* Kcal */

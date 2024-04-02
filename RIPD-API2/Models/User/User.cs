@@ -7,5 +7,5 @@ public class User : IdentityUser<Guid>
   public ICollection<Food>? ContributedFoods = new HashSet<Food>();
   public ICollection<Food>? ManufacturedFoods = new HashSet<Food>();
   public ICollection<Workout>? ContributedWorkouts = new HashSet<Workout>();
-  public Diary Diary { get; set; }
+  public Diary Diary = new Diary();
 }
