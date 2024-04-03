@@ -91,15 +91,15 @@ namespace RIPD_API2.Controllers
       await _dbContext.SaveChangesAsync();
     }
 
-    [HttpDelete("foods/{foodId}")]
-    public async Task DeleteFoodEntryById([FromRoute] Guid userId, [FromRoute] int foodEntryId)
+    [HttpDelete("foods/{foodEntryNr}")]
+    public async Task DeleteFoodEntryById([FromRoute] Guid userId, [FromRoute] int foodEntryNr)
     {
-      Food_DiaryEntry foodEntry = _dbContext.Users
+      Food_DiaryEntry? foodEntry = _dbContext.Users
         .Include(u => u.Diary).ThenInclude(d => d.FoodEntries)
-        .Where(u => u.Id == userId).FirstOrDefault()
+        .Where(u => u.Id == userId).First()
         .Diary
         .FoodEntries
-        .Where(f => f.EntryNr == foodEntryId).FirstOrDefault();
+        .Where (fe => fe.EntryNr == foodEntryNr).FirstOrDefault();
 
       _dbContext.Remove(foodEntry);
       await _dbContext.SaveChangesAsync();

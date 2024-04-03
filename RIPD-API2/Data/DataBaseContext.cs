@@ -27,56 +27,7 @@ public class DataBaseContext : IdentityDbContext<User, IdentityRole<Guid>, Guid>
     #region User
     builder.Entity<User>(u =>
     {
-      u.OwnsOne(u => u.Diary, d =>
-      {
-        d.WithOwner(d => d.Owner).HasForeignKey(d => d.OwnerId);
-
-        d.OwnsMany(d => d.FoodEntries, f =>
-        {
-          f.WithOwner(f => f.Diary).HasForeignKey(f => f.DiaryId);
-
-          f.HasKey(f => new { f.DiaryId, f.EntryNr });
-          f.Property(f => f.DiaryId).ValueGeneratedNever();
-          f.Property(f => f.EntryNr).ValueGeneratedNever();
-
-          f.HasOne(f => f.Food).WithMany()
-          .HasForeignKey(f => f.FoodId)
-          .OnDelete(DeleteBehavior.NoAction);
-        });
-
-        d.OwnsMany(d => d.WorkoutEntries, w =>
-        {
-          w.WithOwner(w => w.Diary).HasForeignKey(w => w.DiaryId);
-          w.HasOne(w => w.Workout).WithMany()
-          .HasForeignKey(w => w.WorkoutId)
-          .OnDelete(DeleteBehavior.NoAction);
-        });
-
-        d.OwnsMany(d => d.Runs, r =>
-        {
-          r.WithOwner(r => r.Diary).HasForeignKey(r => r.DiaryId);
-        });
-
-        d.OwnsMany(d => d.BodyMetrics, b =>
-        {
-          b.WithOwner(b => b.Diary).HasForeignKey(b => b.DiaryId);
-          b.HasKey(b => new { b.DiaryId, b.EntryNr });
-          b.Property(b => b.DiaryId).ValueGeneratedNever();
-          b.Property(b => b.EntryNr).ValueGeneratedNever();
-        });
-
-        d.OwnsMany(d => d.FitnessTargets, f =>
-        {
-          f.WithOwner(f => f.Diary).HasForeignKey(f => f.DiaryId);
-          f.HasKey(f => new { f.DiaryId, f.EntryNr });
-          f.Property(f => f.DiaryId).ValueGeneratedNever();
-          f.Property(f => f.EntryNr).ValueGeneratedNever();
-
-          f.HasOne(f => f.StartBodyMetric).WithMany()
-          .HasForeignKey(f => f.StartBodyMetricEntryNr)
-          .OnDelete(DeleteBehavior.NoAction);
-        });
-      });
+      u.HasOne(u => u.Diary).WithOne(d => d.Owner);
 
       u.HasMany(u => u.ManufacturedFoods).WithOne(f => f.Manufacturer)
       .HasForeignKey(f => f.ManufacturerId)
@@ -87,6 +38,80 @@ public class DataBaseContext : IdentityDbContext<User, IdentityRole<Guid>, Guid>
     });
     #endregion User
 
+    #region Diary
+    builder.Entity<Diary>(d =>
+    {
+      d.HasMany(d => d.FoodEntries)
+        .WithOne(f => f.Diary)
+        .HasForeignKey(f => f.DiaryId)
+        .OnDelete(DeleteBehavior.Cascade);
+
+      d.HasMany(d => d.WorkoutEntries)
+        .WithOne(w => w.Diary)
+        .HasForeignKey(w => w.DiaryId)
+        .OnDelete(DeleteBehavior.Cascade);
+
+      d.HasMany(d => d.Runs)
+        .WithOne(r => r.Diary)
+        .HasForeignKey(r => r.DiaryId)
+        .OnDelete(DeleteBehavior.Cascade);
+
+      d.HasMany(d => d.BodyMetrics)
+        .WithOne(b => b.Diary)
+        .HasForeignKey(b => b.DiaryId)
+        .OnDelete(DeleteBehavior.Cascade);
+
+      d.HasMany(d => d.FitnessTargets)
+        .WithOne(f => f.Diary)
+        .HasForeignKey(f => f.DiaryId)
+        .OnDelete(DeleteBehavior.Cascade);
+    });
+    #endregion Diary
+
+    #region Things in Diary
+    builder.Entity<Food_DiaryEntry>(fe =>
+    {
+      fe.HasKey(f => new { f.DiaryId, f.EntryNr });
+      fe.Property(f => f.DiaryId).ValueGeneratedNever();
+      fe.Property(f => f.EntryNr).ValueGeneratedNever();
+
+      fe.HasOne(f => f.Food).WithMany()
+      .HasForeignKey(f => f.FoodId)
+      .OnDelete(DeleteBehavior.NoAction);
+    });
+
+    builder.Entity<Workout_DiaryEntry>(we =>
+    {
+      we.HasOne(w => w.Workout).WithMany()
+      .HasForeignKey(w => w.WorkoutId)
+      .OnDelete(DeleteBehavior.NoAction);
+    });
+
+    builder.Entity<Run>(r =>
+    {
+    });
+
+    builder.Entity<BodyMetric>(b =>
+    {
+      b.HasKey(b => new { b.DiaryId, b.EntryNr });
+      b.Property(b => b.DiaryId).ValueGeneratedNever();
+      b.Property(b => b.EntryNr).ValueGeneratedNever();
+    });
+
+    builder.Entity<FitnessTarget>(ft =>
+    {
+      ft.HasKey(ft => new { ft.DiaryId, ft.EntryNr });
+      ft.Property(ft => ft.DiaryId).ValueGeneratedNever();
+      ft.Property(ft => ft.EntryNr).ValueGeneratedNever();
+      ft.HasOne(ft => ft.StartBodyMetric).WithMany()
+      .HasForeignKey(ft => new { ft.BodyMetricUser, ft.StartBodyMetricEntryNr})
+      .OnDelete(DeleteBehavior.NoAction);
+      ft.HasOne(ft => ft.GoalBodyMetric).WithMany()
+      .HasForeignKey(ft => new { ft.BodyMetricUser, ft.GoalBodyMetricEntryNr })
+      .OnDelete(DeleteBehavior.NoAction);
+    });
+    #endregion Things in Diary
+
     #region Food
     builder.Entity<Food>(f =>
     {
@@ -94,8 +119,8 @@ public class DataBaseContext : IdentityDbContext<User, IdentityRole<Guid>, Guid>
       .HasForeignKey(f => f.ManufacturerId)
       .OnDelete(DeleteBehavior.NoAction);
       f.HasOne(f => f.Contributer).WithMany(u => u.ContributedFoods)
-      .HasForeignKey(f => f.ContributerId)
-      .OnDelete(DeleteBehavior.NoAction);
+          .HasForeignKey(f => f.ContributerId)
+          .OnDelete(DeleteBehavior.NoAction);
     });
     #endregion Food
 
