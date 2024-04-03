@@ -1,18 +1,14 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using System.ComponentModel.DataAnnotations.Schema;
+using System.ComponentModel.DataAnnotations;
 
 namespace RIPD_API2.Models;
 
-[PrimaryKey(nameof(DiaryId),nameof(Id))]
 [Owned]
-public class Food_DiaryEntry
+[PrimaryKey(nameof(DiaryId), nameof(EntryNr))]
+public class Food_DiaryEntry : DiaryEntry
 {
-  [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-  public int Id { get; set; }
-  public required Guid DiaryId { get; set; }
-  public required Diary Diary { get; set; }
-  public int? FoodId { get; set; }
-  public Food? Food { get; set; }
-  public double Amount { get; set; }
-  public DateTime Added { get; set; }
+  public required int? FoodId { get; set; }
+  public required Food? Food { get; set; }
+  public required double Amount { get; set; }
+  public required DateTime Consumed { get; set; }
 }

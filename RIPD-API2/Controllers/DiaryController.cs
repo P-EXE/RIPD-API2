@@ -25,44 +25,84 @@ namespace RIPD_API2.Controllers
     [HttpPost("foods")]
     public async Task AddFoodEntryAsync([FromRoute] Guid userId, Food_DiaryEntryDTO_Create createDiaryFood)
     {
-      Food food = await _dbContext.Foods.FindAsync(createDiaryFood.FoodId);
-      Diary diary = await _dbContext.Diaries.FindAsync(userId);
+      User? user = await _dbContext.Users.Where(u => u.Id == userId).FirstOrDefaultAsync();
+      Food? food = await _dbContext.Foods.FindAsync(createDiaryFood.FoodId);
+
+      int lastEntryNr = _dbContext.Users
+        .Include(u => u.Diary).ThenInclude(d => d.FoodEntries)
+        .Where(u => u.Id == userId).First()
+        .Diary
+        .FoodEntries.Select(f => (int?)f.EntryNr).Max() ?? 0;
 
       Food_DiaryEntry diaryFood = new()
       {
         DiaryId = userId,
-        Diary = diary,
+        Diary = user.Diary,
+        EntryNr = lastEntryNr + 1,
         FoodId = createDiaryFood.FoodId,
         Food = food,
         Amount = createDiaryFood.Amount,
-        Added = createDiaryFood.Added
+        Consumed = createDiaryFood.Consumed,
+        Added = DateTime.UtcNow
       };
 
-      diary.FoodEntries.Add(diaryFood);
-      _dbContext.Update(diary);
+      user.Diary.FoodEntries.Add(diaryFood);
       await _dbContext.SaveChangesAsync();
     }
 
     [HttpGet("foods/recent")]
     public async Task<IEnumerable<Food?>> GetRecentFoodEntriesAsync([FromRoute] Guid userId)
     {
-      IEnumerable<Food?> foods = _dbContext.Diaries
-        .Include(d => d.FoodEntries).ThenInclude(f => f.Food)
-        .Where(d => d.OwnerId.Equals(userId)).First()
+      IEnumerable<Food?> foods = _dbContext.Users
+        .Include(u => u.Diary).ThenInclude(d => d.FoodEntries).ThenInclude(f => f.Food)
+        .Where(u => u.Id.Equals(userId)).First()
+        .Diary
         .FoodEntries
-        .OrderByDescending(f => f.Added).Take(20).Select(f => f.Food).AsEnumerable();
+        .OrderByDescending(f => f.Consumed).Take(20).Select(f => f.Food).AsEnumerable();
       return foods;
     }
 
     [HttpGet("foods/{date}")]
     public async Task<IEnumerable<Food?>> GetFoodEntriesByDateAsync([FromRoute] Guid userId, [FromRoute] DateTime date)
     {
-      IEnumerable<Food?> foods = _dbContext.Diaries
-        .Include(d => d.FoodEntries).ThenInclude(f => f.Food)
-        .Where(d => d.OwnerId.Equals(userId)).First()
+      IEnumerable<Food?> foods = _dbContext.Users
+        .Include(u => u.Diary).ThenInclude(d => d.FoodEntries).ThenInclude(f => f.Food)
+        .Where(u => u.Id.Equals(userId)).First()
+        .Diary
         .FoodEntries
-        .Where(f => f.Added.Date.Equals(date.Date)).Select(f => f.Food).AsEnumerable();
+        .Where(f => f.Consumed.Date.Equals(date.Date)).Select(f => f.Food).AsEnumerable();
       return foods;
+    }
+
+    [HttpPatch("foods/{foodEntryNr}")]
+    public async Task UpdateFoodEntryById([FromRoute] Guid userId, [FromRoute] int foodEntryNr, Food_DiaryEntryDTO_Update updateDiaryFood)
+    {
+      Food_DiaryEntry foodEntry = _dbContext.Users
+        .Include(u => u.Diary).ThenInclude(d => d.FoodEntries)
+        .Where(u => u.Id == userId).FirstOrDefault()
+        .Diary
+        .FoodEntries
+        .Where(f => f.EntryNr == foodEntryNr).FirstOrDefault();
+
+      foodEntry.Amount = updateDiaryFood.Amount;
+      foodEntry.Consumed = updateDiaryFood.Added;
+
+      _dbContext.Update(foodEntry);
+      await _dbContext.SaveChangesAsync();
+    }
+
+    [HttpDelete("foods/{foodId}")]
+    public async Task DeleteFoodEntryById([FromRoute] Guid userId, [FromRoute] int foodEntryId)
+    {
+      Food_DiaryEntry foodEntry = _dbContext.Users
+        .Include(u => u.Diary).ThenInclude(d => d.FoodEntries)
+        .Where(u => u.Id == userId).FirstOrDefault()
+        .Diary
+        .FoodEntries
+        .Where(f => f.EntryNr == foodEntryId).FirstOrDefault();
+
+      _dbContext.Remove(foodEntry);
+      await _dbContext.SaveChangesAsync();
     }
   }
 }

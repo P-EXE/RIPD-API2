@@ -1,15 +1,17 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using System.ComponentModel.DataAnnotations.Schema;
+using System.ComponentModel.DataAnnotations;
 
 namespace RIPD_API2.Models;
 
-[PrimaryKey(nameof(DiaryId),nameof(Id))]
+[PrimaryKey(nameof(DiaryId), nameof(EntryNr))]
 [Owned]
 public class Workout_DiaryEntry
 {
-  public int Id { get; set; }
+  [Key]
   public Guid DiaryId { get; set; }
   public Diary Diary { get; set; }
+  [Key]
+  public int EntryNr { get; set; }
   public int WorkoutId { get; set; }
   public Workout Workout { get; set; }
   public double Amount { get; set; }
