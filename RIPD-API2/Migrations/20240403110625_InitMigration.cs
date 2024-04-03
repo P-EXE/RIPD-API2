@@ -160,16 +160,17 @@ namespace RIPD_API2.Migrations
                 name: "Diaries",
                 columns: table => new
                 {
-                    OwnerID = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                    OwnerId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Diaries", x => x.OwnerID);
+                    table.PrimaryKey("PK_Diaries", x => x.OwnerId);
                     table.ForeignKey(
-                        name: "FK_Diaries_AspNetUsers_OwnerID",
-                        column: x => x.OwnerID,
+                        name: "FK_Diaries_AspNetUsers_OwnerId",
+                        column: x => x.OwnerId,
                         principalTable: "AspNetUsers",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -268,7 +269,8 @@ namespace RIPD_API2.Migrations
                 name: "Runs",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false),
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
                     DiaryId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     MongoDBId = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
@@ -279,7 +281,7 @@ namespace RIPD_API2.Migrations
                         name: "FK_Runs_Diaries_DiaryId",
                         column: x => x.DiaryId,
                         principalTable: "Diaries",
-                        principalColumn: "OwnerID",
+                        principalColumn: "OwnerId",
                         onDelete: ReferentialAction.Cascade);
                 });
 
@@ -301,7 +303,7 @@ namespace RIPD_API2.Migrations
                         name: "FK_DiaryFoods_Diaries_DiaryId",
                         column: x => x.DiaryId,
                         principalTable: "Diaries",
-                        principalColumn: "OwnerID",
+                        principalColumn: "OwnerId",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_DiaryFoods_Foods_FoodId",
@@ -328,7 +330,7 @@ namespace RIPD_API2.Migrations
                         name: "FK_DiaryWorkouts_Diaries_DiaryId",
                         column: x => x.DiaryId,
                         principalTable: "Diaries",
-                        principalColumn: "OwnerID",
+                        principalColumn: "OwnerId",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_DiaryWorkouts_Workouts_WorkoutId",

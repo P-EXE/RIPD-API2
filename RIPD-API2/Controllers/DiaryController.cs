@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using RIPD_API2.Data;
 using RIPD_API2.Models;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace RIPD_API2.Controllers
 {
@@ -21,7 +22,7 @@ namespace RIPD_API2.Controllers
       _dbContext = dbContext;
     }
 
-    [HttpPost("food")]
+    [HttpPost("foods")]
     public async Task AddFoodEntryAsync([FromRoute] Guid userId, Food_DiaryEntryDTO_Create createDiaryFood)
     {
       Food food = await _dbContext.Foods.FindAsync(createDiaryFood.FoodId);
@@ -42,19 +43,25 @@ namespace RIPD_API2.Controllers
       await _dbContext.SaveChangesAsync();
     }
 
-    [HttpGet("food/{date}")]
-    public async Task<List<Food>> GetFoodEntriesByDateAsync([FromRoute] Guid userId, [FromRoute] DateTime date)
+    [HttpGet("foods/recent")]
+    public async Task<IEnumerable<Food?>> GetRecentFoodEntriesAsync([FromRoute] Guid userId)
     {
-      List<Food> foods = new();
-      IQueryable<Food_DiaryEntry> foodEntries = _dbContext.Diaries
-        .Where(d => d.OwnerID.Equals(userId)).First().FoodEntries
-        .Where(f => f.Added.Equals(date)).AsQueryable();
+      IEnumerable<Food?> foods = _dbContext.Diaries
+        .Include(d => d.FoodEntries).ThenInclude(f => f.Food)
+        .Where(d => d.OwnerId.Equals(userId)).First()
+        .FoodEntries
+        .OrderByDescending(f => f.Added).Take(20).Select(f => f.Food).AsEnumerable();
+      return foods;
+    }
 
-      foodEntries.ForEachAsync(d =>
-      {
-        foods.Add(d.Food);
-      });
-
+    [HttpGet("foods/{date}")]
+    public async Task<IEnumerable<Food?>> GetFoodEntriesByDateAsync([FromRoute] Guid userId, [FromRoute] DateTime date)
+    {
+      IEnumerable<Food?> foods = _dbContext.Diaries
+        .Include(d => d.FoodEntries).ThenInclude(f => f.Food)
+        .Where(d => d.OwnerId.Equals(userId)).First()
+        .FoodEntries
+        .Where(f => f.Added.Date.Equals(date.Date)).Select(f => f.Food).AsEnumerable();
       return foods;
     }
   }

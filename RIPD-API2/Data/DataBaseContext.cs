@@ -16,7 +16,6 @@ public class DataBaseContext : IdentityDbContext<User, IdentityRole<Guid>, Guid>
 
   public DataBaseContext(DbContextOptions<DataBaseContext> options) : base(options)
   {
-
   }
 
   protected override void OnModelCreating(ModelBuilder builder)
@@ -26,7 +25,31 @@ public class DataBaseContext : IdentityDbContext<User, IdentityRole<Guid>, Guid>
     #region User
     builder.Entity<User>(u =>
     {
-      u.HasOne(u => u.Diary).WithOne(d => d.Owner);
+      u.OwnsOne(u => u.Diary, d =>
+      {
+        d.WithOwner(d => d.Owner).HasForeignKey(d => d.OwnerId);
+
+        d.OwnsMany(d => d.FoodEntries, f =>
+        {
+          f.WithOwner(f => f.Diary).HasForeignKey(f => f.DiaryId);
+          f.HasOne(f => f.Food).WithMany()
+          .HasForeignKey(f => f.FoodId)
+          .OnDelete(DeleteBehavior.NoAction);
+        });
+
+        d.OwnsMany(d => d.WorkoutEntries, w =>
+        {
+          w.WithOwner(w => w.Diary).HasForeignKey(w => w.DiaryId);
+          w.HasOne(w => w.Workout).WithMany()
+          .HasForeignKey(w => w.WorkoutId)
+          .OnDelete(DeleteBehavior.NoAction);
+        });
+
+        d.OwnsMany(d => d.Runs, r =>
+        {
+          r.WithOwner(r => r.Diary).HasForeignKey(r => r.DiaryId);
+        });
+      });
 
       u.HasMany(u => u.ManufacturedFoods).WithOne(f => f.Manufacturer)
       .HasForeignKey(f => f.ManufacturerId)
@@ -37,34 +60,7 @@ public class DataBaseContext : IdentityDbContext<User, IdentityRole<Guid>, Guid>
     });
     #endregion User
 
-    #region Diary
-    builder.Entity<Diary>(d =>
-    {
-      d.HasOne(d => d.Owner).WithOne(u => u.Diary).OnDelete(DeleteBehavior.NoAction);
-
-      d.OwnsMany(d => d.FoodEntries, f =>
-      {
-        f.WithOwner(f => f.Diary).HasForeignKey(f => f.DiaryId);
-        f.HasOne(f => f.Food).WithMany()
-        .HasForeignKey(f => f.FoodId)
-        .OnDelete(DeleteBehavior.NoAction);
-      });
-
-      d.OwnsMany(d => d.WorkoutEntries, w =>
-      {
-        w.WithOwner(w => w.Diary).HasForeignKey(w => w.DiaryId);
-        w.HasOne(w => w.Workout).WithMany()
-        .HasForeignKey(w => w.WorkoutId)
-        .OnDelete(DeleteBehavior.NoAction);
-      });
-
-/*      d.OwnsMany(d => d.Runs, r =>
-      {
-        r.WithOwner().HasForeignKey(r => r.DiaryId);
-      });*/
-    });
-    #endregion Diary
-
+    #region Food
     builder.Entity<Food>(f =>
     {
       f.HasOne(f => f.Manufacturer).WithMany(u => u.ManufacturedFoods)
@@ -74,12 +70,19 @@ public class DataBaseContext : IdentityDbContext<User, IdentityRole<Guid>, Guid>
       .HasForeignKey(f => f.ContributerId)
       .OnDelete(DeleteBehavior.NoAction);
     });
+    #endregion Food
 
+    #region Workout
     builder.Entity<Workout>(w =>
     {
       w.HasOne(w => w.Contributer).WithMany(u => u.ContributedWorkouts)
       .HasForeignKey(w => w.ContributerId)
       .OnDelete(DeleteBehavior.NoAction);
     });
+    #endregion Workout
+
+    #region Run
+
+    #endregion Run
   }
 }

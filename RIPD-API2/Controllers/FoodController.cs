@@ -28,6 +28,7 @@ public class FoodController : ControllerBase
     Food food = new()
     {
       Name = createFood.Name,
+      Barcode = createFood.Barcode,
       ManufacturerId = manufacturer.Id,
       Manufacturer = manufacturer,
       ContributerId = contributer.Id,
@@ -44,5 +45,17 @@ public class FoodController : ControllerBase
   {
     Food food = await _dbContext.Foods.FindAsync(foodId);
     return food;
+  }
+
+  [HttpGet]
+  public async Task<IEnumerable<Food>> GetFoodsByNameAtPositionAsync([FromQuery] string foodName, [FromQuery] int position)
+  {
+    IEnumerable<Food> foods = _dbContext.Foods
+      .Where(f => f.Name.Contains(foodName))
+      .OrderBy(f => f.Name)
+      .Skip(position)
+      .Take(5)
+      .AsEnumerable();
+    return foods;
   }
 }
