@@ -5,7 +5,7 @@ using RIPD_API2.Models;
 
 namespace RIPD_API2.Data;
 
-public class DataBaseContext : IdentityDbContext<User, IdentityRole<Guid>, Guid>
+public class SQLDataBaseContext : IdentityDbContext<User, IdentityRole<Guid>, Guid>
 {
   public DbSet<Diary> Diaries => Set<Diary>();
   public DbSet<Food> Foods => Set<Food>();
@@ -16,7 +16,7 @@ public class DataBaseContext : IdentityDbContext<User, IdentityRole<Guid>, Guid>
   public DbSet<BodyMetric> BodyMetrics => Set<BodyMetric>();
   public DbSet<FitnessTarget> FitnessTargets => Set<FitnessTarget>();
 
-  public DataBaseContext(DbContextOptions<DataBaseContext> options) : base(options)
+  public SQLDataBaseContext(DbContextOptions<SQLDataBaseContext> options) : base(options)
   {
   }
 

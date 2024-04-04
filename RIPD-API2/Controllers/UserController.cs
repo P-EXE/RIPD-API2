@@ -11,9 +11,9 @@ namespace RIPD_API2.Controllers;
 public class UserController : ControllerBase
 {
   private readonly IMapper _mapper;
-  private readonly DataBaseContext _dbContext;
+  private readonly SQLDataBaseContext _dbContext;
 
-  public UserController(IMapper mapper, DataBaseContext dbContext)
+  public UserController(IMapper mapper, SQLDataBaseContext dbContext)
   {
     _mapper = mapper;
     _dbContext = dbContext;

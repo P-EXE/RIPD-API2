@@ -10,7 +10,7 @@ using RIPD_API2.Data;
 
 namespace RIPD_API2.Migrations
 {
-    [DbContext(typeof(DataBaseContext))]
+    [DbContext(typeof(SQLDataBaseContext))]
     partial class DataBaseContextModelSnapshot : ModelSnapshot
     {
         protected override void BuildModel(ModelBuilder modelBuilder)

@@ -11,9 +11,9 @@ namespace RIPD_API2.Controllers;
 public class FoodController : ControllerBase
 {
   private readonly IMapper _mapper;
-  private readonly DataBaseContext _dbContext;
+  private readonly SQLDataBaseContext _dbContext;
 
-  public FoodController(IMapper mapper, DataBaseContext dbContext)
+  public FoodController(IMapper mapper, SQLDataBaseContext dbContext)
   {
     _mapper = mapper;
     _dbContext = dbContext;

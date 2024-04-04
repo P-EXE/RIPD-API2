@@ -23,15 +23,21 @@ builder.Services.AddSwaggerGen(options =>
   options.OperationFilter<SecurityRequirementsOperationFilter>();
 });
 
-builder.Services.AddDbContext<DataBaseContext>(options =>
+builder.Services.AddDbContext<SQLDataBaseContext>(options =>
   options.UseSqlServer(
-    builder.Configuration.GetConnectionString("RIPDDB2-Connection")
+    builder.Configuration.GetConnectionString("RIPDDB2-SQLConnection")
+  )
+);
+
+builder.Services.AddDbContext<MongoDataBaseContext>(options =>
+  options.UseMongoDB(
+    builder.Configuration.GetConnectionString("RIPDDB2-MongoConnection"), "RIPDB2"
   )
 );
 
 builder.Services.AddAuthorization();
 builder.Services.AddIdentityApiEndpoints<User>()
-  .AddEntityFrameworkStores<DataBaseContext>();
+  .AddEntityFrameworkStores<SQLDataBaseContext>();
 
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 

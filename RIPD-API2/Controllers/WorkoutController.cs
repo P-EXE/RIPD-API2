@@ -10,9 +10,9 @@ namespace RIPD_API2.Controllers;
 public class WorkoutController : ControllerBase
 {
   private readonly IMapper _mapper;
-  private readonly DataBaseContext _dbContext;
+  private readonly SQLDataBaseContext _dbContext;
 
-  public WorkoutController(IMapper mapper, DataBaseContext dbContext)
+  public WorkoutController(IMapper mapper, SQLDataBaseContext dbContext)
   {
     _mapper = mapper;
     _dbContext = dbContext;
