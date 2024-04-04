@@ -1,11 +1,9 @@
 ﻿namespace RIPD_API2.Models;
 
-public class Workout
+public class WorkoutDTO_Create
 {
-  public int? Id { get; set; }
   public required string Name { get; set; }
   public required string Description { get; set; }
   public required Guid ContributerId { get; set; }
-  public required User Contributer { get; set; }
   public required float Energy { get; set; }
 }

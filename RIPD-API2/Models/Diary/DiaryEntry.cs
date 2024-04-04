@@ -12,5 +12,6 @@ public class DiaryEntry
   public required Diary Diary { get; set; }
   [Key]
   public required int EntryNr { get; set; }
+  public required DateTime Acted {  get; set; }
   public required DateTime Added {  get; set; }
 }

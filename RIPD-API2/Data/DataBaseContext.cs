@@ -12,7 +12,7 @@ public class DataBaseContext : IdentityDbContext<User, IdentityRole<Guid>, Guid>
   public DbSet<Food_DiaryEntry> DiaryFoods => Set<Food_DiaryEntry>();
   public DbSet<Workout> Workouts => Set<Workout>();
   public DbSet<Workout_DiaryEntry> DiaryWorkouts => Set<Workout_DiaryEntry>();
-  public DbSet<Run> Runs => Set<Run>();
+  public DbSet<RunEntry> Runs => Set<RunEntry>();
   public DbSet<BodyMetric> BodyMetrics => Set<BodyMetric>();
   public DbSet<FitnessTarget> FitnessTargets => Set<FitnessTarget>();
 
@@ -87,7 +87,7 @@ public class DataBaseContext : IdentityDbContext<User, IdentityRole<Guid>, Guid>
       .OnDelete(DeleteBehavior.NoAction);
     });
 
-    builder.Entity<Run>(r =>
+    builder.Entity<RunEntry>(r =>
     {
     });
 

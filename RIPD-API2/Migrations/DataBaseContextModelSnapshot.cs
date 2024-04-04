@@ -164,13 +164,13 @@ namespace RIPD_API2.Migrations
                     b.Property<DateTime>("Added")
                         .HasColumnType("datetime2");
 
-                    b.Property<double>("Height")
+                    b.Property<double?>("Height")
                         .HasColumnType("float");
 
                     b.Property<DateTime>("Recorded")
                         .HasColumnType("datetime2");
 
-                    b.Property<double>("Weight")
+                    b.Property<double?>("Weight")
                         .HasColumnType("float");
 
                     b.HasKey("DiaryId", "EntryNr");
@@ -415,19 +415,22 @@ namespace RIPD_API2.Migrations
                     b.ToTable("DiaryFoods");
                 });
 
-            modelBuilder.Entity("RIPD_API2.Models.Run", b =>
+            modelBuilder.Entity("RIPD_API2.Models.RunEntry", b =>
                 {
                     b.Property<Guid>("DiaryId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<int>("Id")
+                    b.Property<int>("EntryNr")
                         .HasColumnType("int");
+
+                    b.Property<DateTime>("Added")
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("MongoDBId")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("DiaryId", "Id");
+                    b.HasKey("DiaryId", "EntryNr");
 
                     b.ToTable("Runs");
                 });
@@ -500,11 +503,11 @@ namespace RIPD_API2.Migrations
 
             modelBuilder.Entity("RIPD_API2.Models.Workout", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<int?>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int?>("Id"));
 
                     b.Property<Guid>("ContributerId")
                         .HasColumnType("uniqueidentifier");
@@ -538,10 +541,10 @@ namespace RIPD_API2.Migrations
                     b.Property<DateTime>("Added")
                         .HasColumnType("datetime2");
 
-                    b.Property<double>("Amount")
+                    b.Property<double?>("Amount")
                         .HasColumnType("float");
 
-                    b.Property<int>("WorkoutId")
+                    b.Property<int?>("WorkoutId")
                         .HasColumnType("int");
 
                     b.HasKey("DiaryId", "EntryNr");
@@ -688,7 +691,7 @@ namespace RIPD_API2.Migrations
                     b.Navigation("Food");
                 });
 
-            modelBuilder.Entity("RIPD_API2.Models.Run", b =>
+            modelBuilder.Entity("RIPD_API2.Models.RunEntry", b =>
                 {
                     b.HasOne("RIPD_API2.Models.Diary", "Diary")
                         .WithMany("Runs")
@@ -721,8 +724,7 @@ namespace RIPD_API2.Migrations
                     b.HasOne("RIPD_API2.Models.Workout", "Workout")
                         .WithMany()
                         .HasForeignKey("WorkoutId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.NoAction);
 
                     b.Navigation("Diary");
 

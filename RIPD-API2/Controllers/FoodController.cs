@@ -1,5 +1,4 @@
 ﻿using AutoMapper;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using RIPD_API2.Data;
@@ -20,11 +19,13 @@ public class FoodController : ControllerBase
     _dbContext = dbContext;
   }
 
+  #region Create
+
   [HttpPost]
   public async Task CreateFoodAsync([FromBody] FoodDTO_Create createFood)
   {
-    User manufacturer = await _dbContext.Users.Where(u => u.Id.Equals(createFood.Manufacturer)).FirstOrDefaultAsync();
-    User contributer = await _dbContext.Users.Where(u => u.Id.Equals(createFood.Contributer)).FirstOrDefaultAsync();
+    User? manufacturer = await _dbContext.Users.FindAsync(createFood.ManufacturerId);
+    User? contributer = await _dbContext.Users.FindAsync(createFood.ContributerId);
     Food food = new()
     {
       Name = createFood.Name,
@@ -40,10 +41,15 @@ public class FoodController : ControllerBase
     await _dbContext.SaveChangesAsync();
   }
 
+  #endregion Create
+
+  #region Get
+
   [HttpGet("{foodId}")]
-  public async Task<Food> GetFoodByIdAsync([FromRoute] int foodId)
+  public async Task<Food?> GetFoodByIdAsync([FromRoute] int foodId)
   {
-    Food food = await _dbContext.Foods.FindAsync(foodId);
+    Food? food = await _dbContext.Foods
+      .FindAsync(foodId);
     return food;
   }
 
@@ -58,4 +64,6 @@ public class FoodController : ControllerBase
       .AsEnumerable();
     return foods;
   }
+
+  #endregion Get
 }
