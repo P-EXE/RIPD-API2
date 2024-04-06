@@ -1,10 +1,9 @@
-using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.Filters;
 using RIPD_API2.Data;
 using RIPD_API2.Models;
-using RIPD_API2.Controllers;
+using RIPD_API2.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -29,9 +28,11 @@ builder.Services.AddDbContext<SQLDataBaseContext>(options =>
   )
 );
 
+MongoDataBaseSettings mongoDataBaseSettings = builder.Configuration.GetSection("MongoDataBaseSettings").Get<MongoDataBaseSettings>();
+builder.Services.Configure<MongoDataBaseSettings>(builder.Configuration.GetSection("MongoDataBaseSettings"));
 builder.Services.AddDbContext<MongoDataBaseContext>(options =>
   options.UseMongoDB(
-    builder.Configuration.GetConnectionString("RIPDDB2-MongoConnection"), "RIPDB2"
+    mongoDataBaseSettings.ConnectionString, mongoDataBaseSettings.DatabaseName
   )
 );
 
@@ -41,6 +42,7 @@ builder.Services.AddIdentityApiEndpoints<User>()
 
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
+builder.Services.AddSingleton<MongoDBService>();
 
 var app = builder.Build();
 

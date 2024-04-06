@@ -5,13 +5,15 @@ namespace RIPD_API2.Data;
 
 public class MongoDataBaseContext : DbContext
 {
-  public DbSet<Run> Runs => Set<Run>();
-  public MongoDataBaseContext(DbContextOptions<SQLDataBaseContext> options) : base(options)
+  public DbSet<Run> Runs { get; set; }
+  public MongoDataBaseContext(DbContextOptions<MongoDataBaseContext> options) : base(options)
   {
   }
 
   protected override void OnModelCreating(ModelBuilder builder)
   {
     base.OnModelCreating(builder);
+
+    builder.Entity<Run>();
   }
 }

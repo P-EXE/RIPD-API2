@@ -12,7 +12,7 @@ public class SQLDataBaseContext : IdentityDbContext<User, IdentityRole<Guid>, Gu
   public DbSet<Food_DiaryEntry> DiaryFoods => Set<Food_DiaryEntry>();
   public DbSet<Workout> Workouts => Set<Workout>();
   public DbSet<Workout_DiaryEntry> DiaryWorkouts => Set<Workout_DiaryEntry>();
-  public DbSet<RunEntry> Runs => Set<RunEntry>();
+  public DbSet<Run_DiaryEntry> DiaryRuns => Set<Run_DiaryEntry>();
   public DbSet<BodyMetric> BodyMetrics => Set<BodyMetric>();
   public DbSet<FitnessTarget> FitnessTargets => Set<FitnessTarget>();
 
@@ -51,7 +51,7 @@ public class SQLDataBaseContext : IdentityDbContext<User, IdentityRole<Guid>, Gu
         .HasForeignKey(w => w.DiaryId)
         .OnDelete(DeleteBehavior.Cascade);
 
-      d.HasMany(d => d.Runs)
+      d.HasMany(d => d.RunEntries)
         .WithOne(r => r.Diary)
         .HasForeignKey(r => r.DiaryId)
         .OnDelete(DeleteBehavior.Cascade);
@@ -87,7 +87,7 @@ public class SQLDataBaseContext : IdentityDbContext<User, IdentityRole<Guid>, Gu
       .OnDelete(DeleteBehavior.NoAction);
     });
 
-    builder.Entity<RunEntry>(r =>
+    builder.Entity<Run_DiaryEntry>(r =>
     {
     });
 

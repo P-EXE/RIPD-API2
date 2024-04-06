@@ -10,7 +10,7 @@ public class Diary
 
   public ICollection<Food_DiaryEntry> FoodEntries = new HashSet<Food_DiaryEntry>();
   public ICollection<Workout_DiaryEntry> WorkoutEntries = new HashSet<Workout_DiaryEntry>();
-  public ICollection<RunEntry> Runs = new HashSet<RunEntry>();
+  public ICollection<Run_DiaryEntry> RunEntries = new HashSet<Run_DiaryEntry>();
   
   public ICollection<BodyMetric> BodyMetrics = new HashSet<BodyMetric>();
   public ICollection<FitnessTarget> FitnessTargets = new HashSet<FitnessTarget>();

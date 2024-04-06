@@ -4,7 +4,7 @@ namespace RIPD_API2.Models;
 
 [PrimaryKey(nameof(DiaryId), nameof(EntryNr))]
 [Owned]
-public class RunEntry : DiaryEntry
+public class Run_DiaryEntry : DiaryEntry
 {
-  public string MongoDBId { get; set; }
+  public required string? MongoDBId { get; set; }
 }
